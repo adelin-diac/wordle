@@ -1,15 +1,17 @@
-FROM eclipse-temurin:21
+FROM eclipse-temurin:21 AS builder
 
-# Set the working directory
 WORKDIR /app
 
-CMD ["v2_with_server/wordle/gradlew", "clean", "bootJar"]
+COPY v2_with_server/wordle/ .
 
-# Copy the Gradle project files
-COPY v2_with_server/wordle/build/libs/*jar app.jar
+RUN ./gradlew clean bootJar
 
-# Expose the port that the application will run on
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+COPY --from=builder /app/build/libs/*.jar app.jar
+
 EXPOSE 8080
 
-# Define the command to run the application
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
