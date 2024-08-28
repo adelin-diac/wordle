@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY v2_with_server/wordle/ .
 
+RUN chmod +x ./gradlew
 RUN ./gradlew clean bootJar
 
 FROM eclipse-temurin:21-jre
