@@ -1,0 +1,27 @@
+# version: '3.8'
+
+# services:
+#   builder:
+#     image: eclipse-temurin:21
+#     working_dir: /app/v2_with_server/wordle
+#     volumes:
+#       - .:/app
+#       - gradle-cache-builder:/app/v2_with_server/wordle/.gradle
+#     command: ./gradlew -t bootJar
+
+#   app:
+#     image: eclipse-temurin:21
+#     working_dir: /app/v2_with_server/wordle
+#     volumes:
+#       - .:/app
+#       - gradle-cache-app:/app/v2_with_server/wordle/.gradle
+#     ports:
+#       - "8080:8080"
+#     depends_on:
+#       - builder
+#     command: ./gradlew bootRun
+
+
+# volumes:
+#   gradle-cache-builder:
+#   gradle-cache-app:
