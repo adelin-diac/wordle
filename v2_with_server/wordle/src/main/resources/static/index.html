@@ -3,9 +3,183 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wordle</title>
+    <title>Wordle App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f0f0f0;
+      }
+      #game-board {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+        margin-bottom: 20px;
+      }
+      .tile {
+        width: 50px;
+        height: 50px;
+        border: 2px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      #keyboard {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 5px;
+      }
+      .key {
+        padding: 10px;
+        font-size: 16px;
+        text-align: center;
+        background-color: #e0e0e0;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .key:hover {
+        background-color: #d0d0d0;
+      }
+      #message {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
-    Hello to my Wordle app! I will be doing up the frontend soon!
+    <h1>Wordle App</h1>
+    <div id="game-board"></div>
+    <div id="keyboard"></div>
+    <div id="message"></div>
+
+    <script>
+      const gameBoard = document.getElementById("game-board");
+      const keyboard = document.getElementById("keyboard");
+      const messageElement = document.getElementById("message");
+      const rows = 6;
+      const cols = 5;
+      let currentRow = 0;
+      let currentCol = 0;
+      let gameOver = false;
+
+      // Create game board
+      for (let i = 0; i < rows * cols; i++) {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        gameBoard.appendChild(tile);
+      }
+
+      // Create keyboard
+      const keys = [
+        "Q",
+        "W",
+        "E",
+        "R",
+        "T",
+        "Y",
+        "U",
+        "I",
+        "O",
+        "P",
+        "A",
+        "S",
+        "D",
+        "F",
+        "G",
+        "H",
+        "J",
+        "K",
+        "L",
+        "Enter",
+        "Z",
+        "X",
+        "C",
+        "V",
+        "B",
+        "N",
+        "M",
+        "Backspace",
+      ];
+
+      keys.forEach((key) => {
+        const button = document.createElement("button");
+        button.textContent = key;
+        button.classList.add("key");
+        button.addEventListener("click", () => handleInput(key));
+        keyboard.appendChild(button);
+      });
+
+      function handleInput(key) {
+        if (gameOver) return;
+
+        if (key === "Backspace") {
+          if (currentCol > 0) {
+            currentCol--;
+            const tile = gameBoard.children[currentRow * cols + currentCol];
+            tile.textContent = "";
+          }
+        } else if (key === "Enter") {
+          if (currentCol === cols) {
+            submitGuess();
+          }
+        } else if (currentCol < cols) {
+          const tile = gameBoard.children[currentRow * cols + currentCol];
+          tile.textContent = key;
+          currentCol++;
+        }
+      }
+
+      function submitGuess() {
+        const guess = Array.from(gameBoard.children)
+          .slice(currentRow * cols, (currentRow + 1) * cols)
+          .map((tile) => tile.textContent)
+          .join("");
+
+        // Send request to API to verify the answer
+        fetch("https://wordle.adelindiac.site/api/verify-solution", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ guess }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.correct) {
+              messageElement.textContent =
+                "Congratulations! You guessed the word!";
+              gameOver = true;
+            } else {
+              if (currentRow < rows - 1) {
+                currentRow++;
+                currentCol = 0;
+              } else {
+                messageElement.textContent =
+                  "Game over. You ran out of guesses.";
+                gameOver = true;
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            messageElement.textContent = "An error occurred. Please try again.";
+          });
+      }
+
+      // Handle keyboard input
+      document.addEventListener("keydown", (e) => {
+        const key = e.key.toUpperCase();
+        if (keys.includes(key)) {
+          handleInput(key);
+        }
+      });
+    </script>
   </body>
 </html>
