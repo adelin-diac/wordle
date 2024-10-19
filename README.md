@@ -2,11 +2,7 @@
 
 https://wordle.adelindiac.site
 
-## Getting Started
-
-**Don't use Docker yet. The I am still working on getting the `docker-compose.dev.yaml` file to work correctly to allow for development of this project in Docker.**
-
-For now, follow these steps:
+## Developing locally
 
 1. Ensure you have the JDK 21 installed.
 2. Open two terminals, and navigate to `./wordle/v2_with_server/wordle`
