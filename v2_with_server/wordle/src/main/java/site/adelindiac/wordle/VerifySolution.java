@@ -30,7 +30,6 @@ public class VerifySolution {
     System.out.println(requestBody.getField());
     System.out.println("");
     String ret = requestBody.getField() + "-verify";
-    // Method implementation
     return ResponseEntity.ok(ret);
   }
 }
